@@ -76,29 +76,47 @@ public class AuthControllerTest {
 	}
 	
 	 @Test
-	    public void testSuccessfulRegistration() {
+	    public void testSuccessfullRegistration() {
 
-	        User newUser = new User();
-	        
-	        newUser.setEmail("nico@test.com");
-	        newUser.setPassword("nicolas");
-	        
-	        User saveUser = new User();
-	        saveUser.setId(1L);
-	        saveUser.setEmail("nico@test.com");
-	        saveUser.setPassword("nicolas");
-	        
-	        when(userRepositoryMock.existsByEmail(saveUser.getEmail())).thenReturn(false);
-	        
-	        // Configurez le mock pour renvoyer true lors de l'inscription
-	        when(userRepositoryMock.save(newUser)).thenReturn(saveUser);
-	        
+		 String email = "test.nathan@mail.fr";
+			String password = "1";
 
-	        // Appelez la méthode de la classe sous test
-	        User registredUser = userRepositoryMock.save(newUser);
+			when(userRepositoryMock.existsByEmail(email)).thenReturn(false);
+			when(passwordEncoderMock.encode(password)).thenReturn("hashed");
+			when(userRepositoryMock.save(any(User.class))).thenReturn(new User());
 
-	        // Vérifiez que l'inscription a réussi
-	        assertSame(registredUser, saveUser);
+			AuthController authController = new AuthController(authenticationManagerMock, passwordEncoderMock, jwtUtilsMock,
+					userRepositoryMock);
+
+			SignupRequest signupRequest = new SignupRequest();
+			signupRequest.setEmail(email);
+			signupRequest.setFirstName("");
+			signupRequest.setLastName("");
+			signupRequest.setPassword(password);
+			ResponseEntity<?> response = authController.registerUser(signupRequest);
+			assertEquals(HttpStatus.OK, response.getStatusCode());
+		 
+//	        User newUser = new User();
+//	        
+//	        newUser.setEmail("nico@test.com");
+//	        newUser.setPassword("nicolas");
+//	        
+//	        User saveUser = new User();
+//	        saveUser.setId(1L);
+//	        saveUser.setEmail("nico@test.com");
+//	        saveUser.setPassword("nicolas");
+//	        
+//	        when(userRepositoryMock.existsByEmail(saveUser.getEmail())).thenReturn(false);
+//	        
+//	        // Configurez le mock pour renvoyer true lors de l'inscription
+//	        when(userRepositoryMock.save(newUser)).thenReturn(saveUser);
+//	        
+//
+//	        // Appelez la méthode de la classe sous test
+//	        User registredUser = userRepositoryMock.save(newUser);
+//
+//	        // Vérifiez que l'inscription a réussi
+//	        assertSame(registredUser, saveUser);
 	    }
 	 
 	 @Test
