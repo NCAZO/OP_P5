@@ -79,6 +79,7 @@ public class AuthControllerTest {
 	    public void testSuccessfullRegistration() {
 
 		 String email = "test.nicolas@mail.fr";
+		 
 			String password = "1";
 
 			when(userRepositoryMock.existsByEmail(email)).thenReturn(false);
