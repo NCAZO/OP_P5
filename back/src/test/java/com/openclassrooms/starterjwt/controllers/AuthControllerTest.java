@@ -20,23 +20,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
-
 public class AuthControllerTest {
-	
 
-    // Création Mock
-    UserRepository authServiceMock = mock(UserRepository.class);
-    AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
-    PasswordEncoder passwordEncoderMock = mock(PasswordEncoder.class);
-    UserRepository userRepositoryMock = mock(UserRepository.class);
-    JwtUtils jwtUtilsMock = mock(JwtUtils.class);
+	// Création Mock
+	UserRepository authServiceMock = mock(UserRepository.class);
+	AuthenticationManager authenticationManagerMock = mock(AuthenticationManager.class);
+	PasswordEncoder passwordEncoderMock = mock(PasswordEncoder.class);
+	UserRepository userRepositoryMock = mock(UserRepository.class);
+	JwtUtils jwtUtilsMock = mock(JwtUtils.class);
 
-    @Test
+	@Test
 	public void testAuthenticateUser() {
 		Long id = 1L;
 		String email = "nicolas.test@gmail.com";
@@ -74,54 +71,54 @@ public class AuthControllerTest {
 		assertEquals("Bearer", responseBody.getType());
 		assertNotNull(responseBody.getToken());
 	}
-	
-	 @Test
-	    public void testSuccessfullRegistration() {
 
-		 String email = "test.nicolas@mail.fr";
-		 
-			String password = "1";
+	@Test
+	public void testSuccessfullRegistration() {
 
-			when(userRepositoryMock.existsByEmail(email)).thenReturn(false);
-			when(passwordEncoderMock.encode(password)).thenReturn("hashed");
-			when(userRepositoryMock.save(any(User.class))).thenReturn(new User());
+		String email = "test.nicolas@mail.fr";
 
-			AuthController authController = new AuthController(authenticationManagerMock, passwordEncoderMock, jwtUtilsMock,
-					userRepositoryMock);
+		String password = "1";
 
-			SignupRequest signupRequest = new SignupRequest();
-			signupRequest.setEmail(email);
-			signupRequest.setFirstName("");
-			signupRequest.setLastName("");
-			signupRequest.setPassword(password);
-			ResponseEntity<?> response = authController.registerUser(signupRequest);
-			assertEquals(HttpStatus.OK, response.getStatusCode());
-	    }
-	 
-	 @Test
-		public void testEmailAlreadyUseRegistration() {
-			String email = "nico@test.com";
-			String password = "nicolas";
-			String firstname = "Nicolas";
-			String lastname = "CAZO";
-			when(userRepositoryMock.existsByEmail(email)).thenReturn(true);
-			AuthController authController = new AuthController(authenticationManagerMock, passwordEncoderMock, jwtUtilsMock,
-					userRepositoryMock);
+		when(userRepositoryMock.existsByEmail(email)).thenReturn(false);
+		when(passwordEncoderMock.encode(password)).thenReturn("hashed");
+		when(userRepositoryMock.save(any(User.class))).thenReturn(new User());
 
-			SignupRequest signupRequest = new SignupRequest();
-			signupRequest.setEmail(email);
-			signupRequest.setFirstName(firstname);
-			signupRequest.setLastName(lastname);
-			signupRequest.setPassword(password);
+		AuthController authController = new AuthController(authenticationManagerMock, passwordEncoderMock, jwtUtilsMock,
+				userRepositoryMock);
 
-			ResponseEntity<?> response = authController.registerUser(signupRequest);
+		SignupRequest signupRequest = new SignupRequest();
+		signupRequest.setEmail(email);
+		signupRequest.setFirstName("");
+		signupRequest.setLastName("");
+		signupRequest.setPassword(password);
+		ResponseEntity<?> response = authController.registerUser(signupRequest);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
 
-			MessageResponse messageResponse = (MessageResponse) response.getBody();
-			assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-			assertEquals("Error: Email is already taken!", messageResponse.getMessage());
+	@Test
+	public void testEmailAlreadyUseRegistration() {
+		String email = "nico@test.com";
+		String password = "nicolas";
+		String firstname = "Nicolas";
+		String lastname = "CAZO";
+		when(userRepositoryMock.existsByEmail(email)).thenReturn(true);
+		AuthController authController = new AuthController(authenticationManagerMock, passwordEncoderMock, jwtUtilsMock,
+				userRepositoryMock);
 
-		}
-	 
+		SignupRequest signupRequest = new SignupRequest();
+		signupRequest.setEmail(email);
+		signupRequest.setFirstName(firstname);
+		signupRequest.setLastName(lastname);
+		signupRequest.setPassword(password);
+
+		ResponseEntity<?> response = authController.registerUser(signupRequest);
+
+		MessageResponse messageResponse = (MessageResponse) response.getBody();
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+		assertEquals("Error: Email is already taken!", messageResponse.getMessage());
+
+	}
+
 //	 @Test
 //	    public void testEmailAlreadyUseRegistration() {
 //

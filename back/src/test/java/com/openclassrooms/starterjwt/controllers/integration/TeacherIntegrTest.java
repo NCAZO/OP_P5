@@ -20,7 +20,6 @@ import com.openclassrooms.starterjwt.security.jwt.JwtUtils;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("TeacherController Integration Tests")
 public class TeacherIntegrTest {
 
     @Autowired
@@ -43,8 +42,7 @@ public class TeacherIntegrTest {
     }
 
     @Test
-    @DisplayName("Find All Teachers → Returns All Teachers")
-    public void testFindAllTeachers_Success() throws Exception {
+    public void testFindAllTeachersOK() throws Exception {
         mockMvc.perform(get("/api/teacher")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                 .contentType(APPLICATION_JSON))
@@ -52,8 +50,7 @@ public class TeacherIntegrTest {
     }
 
     @Test
-    @DisplayName("Find Teacher by ID → Returns the Teacher")
-    public void testFindTeacherById_Success() throws Exception {
+    public void testFindTeacherByIdOK() throws Exception {
         mockMvc.perform(get("/api/teacher/1")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                 .contentType(APPLICATION_JSON))
@@ -61,8 +58,7 @@ public class TeacherIntegrTest {
     }
 
     @Test
-    @DisplayName("Find Teacher by ID → Returns Null for Non-Existing ID")
-    public void testFindTeacherById_NonExistingId() throws Exception {
+    public void testFindTeacherByIdIdNotFound() throws Exception {
         mockMvc.perform(get("/api/teacher/{id}", 999L)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                 .contentType(APPLICATION_JSON))

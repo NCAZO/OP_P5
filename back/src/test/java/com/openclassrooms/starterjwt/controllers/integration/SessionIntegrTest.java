@@ -1,8 +1,7 @@
 package com.openclassrooms.starterjwt.controllers.integration;
 
-
 import java.util.ArrayList;
-import	 java.util.Date;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,86 +36,67 @@ import com.openclassrooms.starterjwt.services.SessionService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("SessionController Integration Tests")
 public class SessionIntegrTest {
 
 	@Autowired
-    private MockMvc mockMvc;
+	private MockMvc mockMvc;
 
-    @Autowired
-    private SessionService sessionService;
+	@Autowired
+	private SessionService sessionService;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper = new ObjectMapper();
 
-    private static String jwt;
+	private static String jwt;
 
-    @BeforeEach
-    public void setUp(@Autowired AuthenticationManager authenticationManager,
-            @Autowired JwtUtils jwtUtils) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken("yoga@studio.com", "test!1234"));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        jwt = jwtUtils.generateJwtToken(authentication);
-    }
+	@BeforeEach
+	public void setUp(@Autowired AuthenticationManager authenticationManager, @Autowired JwtUtils jwtUtils) {
+		Authentication authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken("yoga@studio.com", "test!1234"));
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		jwt = jwtUtils.generateJwtToken(authentication);
+	}
 
-    @Test
-    @DisplayName("Find Session by ID → Returns Session")
-    public void testFindSessionById_Success() throws Exception {
-        Session session = Session.builder()
-                .name("Session")
-                .date(new Date())
-                .description("Session description")
-                .teacher(Teacher.builder().id(1L).firstName("FirstName").lastName("LastName").build())
-                .build();
-        session = sessionService.create(session);
+	@Test
+	public void testFindSessionByIdOK() throws Exception {
+		Session session = Session.builder().name("Session").date(new Date()).description("Session description")
+				.teacher(Teacher.builder().id(1L).firstName("FirstName").lastName("LastName").build()).build();
+		session = sessionService.create(session);
 
-        mockMvc.perform(get("/api/session/{id}", session.getId())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Session"))
-                .andExpect(jsonPath("$.description").value("Session description"));
-    }
+		mockMvc.perform(get("/api/session/{id}", session.getId()).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+				.contentType(APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$.name").value("Session"))
+				.andExpect(jsonPath("$.description").value("Session description"));
+	}
 
-    @Test
-    @DisplayName("Find Session by ID → Returns Null for Non-Existing ID")
-    public void testFindSessionById_Null_WhenNonExistingId() throws Exception {
-        mockMvc.perform(get("/api/session/{id}", 999L)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
+	@Test
+	public void testFindSessionByIdIdNotFound() throws Exception {
+		mockMvc.perform(get("/api/session/{id}", 999L).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+				.contentType(APPLICATION_JSON)).andExpect(status().isNotFound());
+	}
 
-    @Test
-    @DisplayName("Find All Sessions → Returns All Sessions")
-    public void testFindAllSession_Success() throws Exception {
-        mockMvc.perform(get("/api/session")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
-    }
+	@Test
+	@DisplayName("Find All Sessions → Returns All Sessions")
+	public void testFindAllSessionOK() throws Exception {
+		mockMvc.perform(get("/api/session").header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
+				.andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
+	}
 
-    @Test
-    @DisplayName("Create Session → Saves and Returns Session")
-    public void testCreateSession_Success() throws Exception {
-        SessionDto sessionDto = new SessionDto();
-        sessionDto.setName("New Session");
-        sessionDto.setDate(new Date());
-        sessionDto.setTeacher_id(1L);
-        sessionDto.setDescription("New Description");
+	@Test
+	public void testCreateSessionOK() throws Exception {
+		SessionDto sessionDto = new SessionDto();
+		sessionDto.setName("New Session");
+		sessionDto.setDate(new Date());
+		sessionDto.setTeacher_id(1L);
+		sessionDto.setDescription("New Description");
 
-        mockMvc.perform(post("/api/session")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(sessionDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("New Session"))
-                .andExpect(jsonPath("$.description").value("New Description"));
-    }
+		mockMvc.perform(post("/api/session").header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+				.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(sessionDto)))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.name").value("New Session"))
+				.andExpect(jsonPath("$.description").value("New Description"));
+	}
 
-    @Test
-    @DisplayName("Update Session → Returns Updated Session")
-    public void testUpdateSession_Success() throws Exception {
+	@Test
+    public void testUpdateSessionOK() throws Exception {	
         Session session = Session.builder()
                 .name("Session")
                 .date(new Date())
@@ -140,96 +120,61 @@ public class SessionIntegrTest {
                 .andExpect(jsonPath("$.description").value("Updated Description"));
     }
 
-    @Test
-    @DisplayName("Delete Session by ID")
-    public void testDeleteSession_Success() throws Exception {
-        Session session = Session.builder()
-                .name("Session")
-                .date(new Date())
-                .description("Session description")
-                .teacher(Teacher.builder().id(1L).firstName("FirstName").lastName("LastName").build())
-                .build();
-        session = sessionService.create(session);
+	@Test
+	public void testDeleteSessionOK() throws Exception {
+		Session session = Session.builder().name("Session").date(new Date()).description("Session description")
+				.teacher(Teacher.builder().id(1L).firstName("FirstName").lastName("LastName").build()).build();
+		session = sessionService.create(session);
 
-        mockMvc.perform(delete("/api/session/{id}", session.getId())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
-                .andExpect(status().isOk());
+		mockMvc.perform(delete("/api/session/{id}", session.getId()).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
+				.andExpect(status().isOk());
 
-        mockMvc.perform(get("/api/session/{id}", session.getId())
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
-                .andExpect(status().isNotFound());
-    }
+		mockMvc.perform(get("/api/session/{id}", session.getId()).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
+				.andExpect(status().isNotFound());
+	}
 
-    @Test
-    @DisplayName("Participate in Session → Successful Participation")
-    public void testParticipateSession_Success() throws Exception {
-        Session session = Session.builder()
-                .name("Session")
-                .date(new Date())
-                .description("Session description")
-                .users(new ArrayList<>())
-                .build();
-        session = sessionService.create(session);
+	@Test
+	public void testParticipateSessionOK() throws Exception {
+		Session session = Session.builder().name("Session").date(new Date()).description("Session description")
+				.users(new ArrayList<>()).build();
+		session = sessionService.create(session);
 
-        mockMvc.perform(post("/api/session/{id}/participate/{userId}", session.getId(), 1L)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
-                .andExpect(status().isOk());
-    }
+		mockMvc.perform(post("/api/session/{id}/participate/{userId}", session.getId(), 1L)
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)).andExpect(status().isOk());
+	}
 
-    @Test
-    @DisplayName("Participate in Session → User Not Found")
-    public void testParticipateSession_UserNotFound() throws Exception {
-        Session session = Session.builder()
-                .name("Session")
-                .date(new Date())
-                .description("Session description")
-                .teacher(Teacher.builder().id(1L).firstName("FirstName").lastName("LastName").build())
-                .build();
-        session = sessionService.create(session);
+	@Test
+	public void testParticipateSessionUserNotFound() throws Exception {
+		Session session = Session.builder().name("Session").date(new Date()).description("Session description")
+				.teacher(Teacher.builder().id(1L).firstName("FirstName").lastName("LastName").build()).build();
+		session = sessionService.create(session);
 
-        mockMvc.perform(post("/api/session/{id}/participate/{userId}", session.getId(), 999L)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
-                .andExpect(status().isNotFound());
-    }
+		mockMvc.perform(post("/api/session/{id}/participate/{userId}", session.getId(), 999L)
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)).andExpect(status().isNotFound());
+	}
 
-    @Test
-    @DisplayName("Participate in Session → Session Not Found")
-    public void testParticipateSession_SessionNotFound() throws Exception {
-        mockMvc.perform(post("/api/session/{id}/participate/{userId}", 999L, 1L)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
-                .andExpect(status().isNotFound());
-    }
+	@Test
+	public void testParticipateSessionSessionNotFound() throws Exception {
+		mockMvc.perform(post("/api/session/{id}/participate/{userId}", 999L, 1L).header(HttpHeaders.AUTHORIZATION,
+				"Bearer " + jwt)).andExpect(status().isNotFound());
+	}
 
-    @Test
-    @DisplayName("No Longer Participate in Session → Successful")
-    public void testNoLongerParticipateSession_Success() throws Exception {
-        User user = User.builder()
-                .id(1L)
-                .email("john.doe@example.fr")
-                .firstName("John")
-                .lastName("Doe")
-                .password("password")
-                .admin(true)
-                .build();
-        Session session = Session.builder()
-                .name("Session")
-                .date(new Date())
-                .description("Session description")
-                .users(List.of(user))
-                .teacher(Teacher.builder().id(1L).firstName("Bob").lastName("Marley").build())
-                .build();
-        session = sessionService.create(session);
+	@Test
+	public void testNoLongerParticipateSessionOK() throws Exception {
+		User user = User.builder().id(1L).email("john.doe@example.fr").firstName("John").lastName("Doe")
+				.password("password").admin(true).build();
+		Session session = Session.builder().name("Session").date(new Date()).description("Session description")
+				.users(List.of(user)).teacher(Teacher.builder().id(1L).firstName("Bob").lastName("Marley").build())
+				.build();
+		session = sessionService.create(session);
 
-        mockMvc.perform(delete("/api/session/{id}/participate/{userId}", session.getId(), 1L)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
-                .andExpect(status().isOk());
-    }
+		mockMvc.perform(delete("/api/session/{id}/participate/{userId}", session.getId(), 1L)
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)).andExpect(status().isOk());
+	}
 
-    @Test
-    @DisplayName("No Longer Participate in Session → Session Not Found")
-    public void testNoLongerParticipateSession_SessionNotFound() throws Exception {
-        mockMvc.perform(delete("/api/session/{id}/participate/{userId}", 999L, 1L)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt))
-                .andExpect(status().isNotFound());
-    }
+	@Test
+	public void testNoLongerParticipateSessionNotFound() throws Exception {
+		mockMvc.perform(delete("/api/session/{id}/participate/{userId}", 999L, 1L).header(HttpHeaders.AUTHORIZATION,
+				"Bearer " + jwt)).andExpect(status().isNotFound());
+	}
 }

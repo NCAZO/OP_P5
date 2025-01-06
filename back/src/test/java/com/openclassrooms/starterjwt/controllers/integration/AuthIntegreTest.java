@@ -25,108 +25,91 @@ import com.openclassrooms.starterjwt.services.UserService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("AuthController Integration Tests")
 public class AuthIntegreTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext context;
+	@Autowired
+	private WebApplicationContext context;
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    private ObjectMapper objectMapper;
-    private Optional<User> user;
+	private ObjectMapper objectMapper;
+	private Optional<User> user;
 
-    @BeforeEach
-    public void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-        objectMapper = new ObjectMapper();
-    }
+	@BeforeEach
+	public void setUp() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+		objectMapper = new ObjectMapper();
+	}
 
-    @Test
-    @DisplayName("Register User -> Success")
-    public void testRegisterUser_Success() throws Exception {
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setEmail("john.doe@example.fr");
-        signupRequest.setFirstName("John");
-        signupRequest.setLastName("Doe");
-        signupRequest.setPassword("password");
+	@Test
+	public void testRegisterUserOK() throws Exception {
+		SignupRequest signupRequest = new SignupRequest();
+		signupRequest.setEmail("john.doe@example.fr");
+		signupRequest.setFirstName("John");
+		signupRequest.setLastName("Doe");
+		signupRequest.setPassword("password");
 
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(signupRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("User registered successfully!"));
+		mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(signupRequest))).andExpect(status().isOk())
+				.andExpect(jsonPath("$.message").value("User registered successfully!"));
 
-        user = userRepository.findByEmail("john.doe@example.fr");
-        userService.delete(user.get().getId());
-    }
+		user = userRepository.findByEmail("john.doe@example.fr");
+		userService.delete(user.get().getId());
+	}
 
-    @Test
-    @DisplayName("Register User when Email Already Taken -> Success")
-    public void testRegisterUser_BadRequest_WhenEmailAlreadyTaken() throws Exception {
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setEmail("yoga@studio.com");
-        signupRequest.setFirstName("Yoga");
-        signupRequest.setLastName("Studio");
-        signupRequest.setPassword("password");
+	@Test
+	public void testRegisterUserBadRequestEmailAlreadyUsed() throws Exception {
+		SignupRequest signupRequest = new SignupRequest();
+		signupRequest.setEmail("yoga@studio.com");
+		signupRequest.setFirstName("Yoga");
+		signupRequest.setLastName("Studio");
+		signupRequest.setPassword("password");
 
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(signupRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Error: Email is already taken!"));
-    }
+		mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(signupRequest))).andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("Error: Email is already taken!"));
+	}
 
-    @Test
-    @DisplayName("Authenticate User Admin -> Success")
-    public void testAuthenticateUserAdmin_Success() throws Exception {
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail("yoga@studio.com");
-        loginRequest.setPassword("test!1234");
+	@Test
+	public void testAuthenticateUserAdminOK() throws Exception {
+		LoginRequest loginRequest = new LoginRequest();
+		loginRequest.setEmail("yoga@studio.com");
+		loginRequest.setPassword("test!1234");
 
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").exists())
-                .andExpect(jsonPath("$.username").value("yoga@studio.com"))
-                .andExpect(jsonPath("$.admin").value(true));
-    }
+		mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(loginRequest))).andExpect(status().isOk())
+				.andExpect(jsonPath("$.token").exists()).andExpect(jsonPath("$.username").value("yoga@studio.com"))
+				.andExpect(jsonPath("$.admin").value(true));
+	}
 
-    @Test
-    @DisplayName("Authenticate User not Admin -> Success")
-    public void testAuthenticateNonAdminUser_Success() throws Exception {
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setEmail("john.doe@example.fr");
-        signupRequest.setPassword("password");
-        signupRequest.setFirstName("John");
-        signupRequest.setLastName("Doe");
+	@Test
+	public void testAuthenticateNonAdminUserOK() throws Exception {
+		SignupRequest signupRequest = new SignupRequest();
+		signupRequest.setEmail("john.doe@example.fr");
+		signupRequest.setPassword("password");
+		signupRequest.setFirstName("John");
+		signupRequest.setLastName("Doe");
 
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(signupRequest)))
-                .andExpect(status().isOk());
+		mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(signupRequest))).andExpect(status().isOk());
 
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail("john.doe@example.fr");
-        loginRequest.setPassword("password");
+		LoginRequest loginRequest = new LoginRequest();
+		loginRequest.setEmail("john.doe@example.fr");
+		loginRequest.setPassword("password");
 
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").exists())
-                .andExpect(jsonPath("$.username").value("john.doe@example.fr"))
-                .andExpect(jsonPath("$.admin").value(false));
+		mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(loginRequest))).andExpect(status().isOk())
+				.andExpect(jsonPath("$.token").exists()).andExpect(jsonPath("$.username").value("john.doe@example.fr"))
+				.andExpect(jsonPath("$.admin").value(false));
 
-        user = userRepository.findByEmail("john.doe@example.fr");
-        userService.delete(user.get().getId());
-    }
+		user = userRepository.findByEmail("john.doe@example.fr");
+		userService.delete(user.get().getId());
+	}
 }

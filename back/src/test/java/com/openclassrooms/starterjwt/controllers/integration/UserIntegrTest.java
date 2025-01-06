@@ -22,7 +22,6 @@ import com.openclassrooms.starterjwt.security.jwt.JwtUtils;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("UserController Integration Tests")
 public class UserIntegrTest {
 
     @Autowired
@@ -40,8 +39,7 @@ public class UserIntegrTest {
     }
 
     @Test
-    @DisplayName("Find User by ID → Returns the User")
-    public void testFindUserById_Success() throws Exception {
+    public void testFindUserByIdOK() throws Exception {
         mockMvc.perform(get("/api/user/1")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                 .contentType(APPLICATION_JSON))
@@ -51,8 +49,7 @@ public class UserIntegrTest {
     }
 
     @Test
-    @DisplayName("Find User by ID → Returns Null for Non-Existing ID")
-    public void testFindUserById_UserNotFound() throws Exception {
+    public void testFindUserByIdUserNotFound() throws Exception {
         mockMvc.perform(get("/api/user/999")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                 .contentType(APPLICATION_JSON))
@@ -60,8 +57,7 @@ public class UserIntegrTest {
     }
 
     @Test
-    @DisplayName("Delete User by ID → Returns Null for Non-Existing ID")
-    public void testDeleteUserById_UserNotFound() throws Exception {
+    public void testDeleteUserByIdUserNotFound() throws Exception {
         mockMvc.perform(delete("/api/user/0")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
                 .contentType(APPLICATION_JSON))
