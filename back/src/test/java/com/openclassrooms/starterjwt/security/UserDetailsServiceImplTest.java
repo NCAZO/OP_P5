@@ -1,4 +1,4 @@
-package security;
+package com.openclassrooms.starterjwt.security;
 
 import static org.mockito.Mockito.mock;
 

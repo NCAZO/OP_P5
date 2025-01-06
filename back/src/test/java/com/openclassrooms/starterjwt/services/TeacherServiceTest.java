@@ -1,4 +1,4 @@
-package services;
+package com.openclassrooms.starterjwt.services;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;

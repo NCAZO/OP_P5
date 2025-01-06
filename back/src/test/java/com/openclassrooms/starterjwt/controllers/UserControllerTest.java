@@ -1,4 +1,4 @@
-package controllers;
+package com.openclassrooms.starterjwt.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
