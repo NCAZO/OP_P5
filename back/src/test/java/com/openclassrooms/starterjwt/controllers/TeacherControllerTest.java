@@ -1,4 +1,4 @@
-package controllers;
+package com.openclassrooms.starterjwt.controllers;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

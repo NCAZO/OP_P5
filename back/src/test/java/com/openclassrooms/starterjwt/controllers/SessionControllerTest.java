@@ -1,4 +1,4 @@
-package controllers;
+package com.openclassrooms.starterjwt.controllers;
 
 import static org.mockito.Mockito.mock;
 
@@ -175,6 +175,15 @@ public class SessionControllerTest {
 			verify(sessionServiceMock).getById(id);
 			assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 		}
+		
+		@Test
+	    void testSessionParticipateOK() {
+			
+			SessionController sessionController = new SessionController(sessionServiceMock, sessionMapperMock);
+			ResponseEntity<?> response = sessionController.participate("1", "1");
+
+			assertEquals(HttpStatus.OK, response.getStatusCode());
+	    }
 		
 		@Test
 		public void testSessionParticipateBadRequest() {

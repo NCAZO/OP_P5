@@ -1,4 +1,4 @@
-package models;
+package com.openclassrooms.starterjwt.models;
 
 import org.junit.jupiter.api.Test;
 

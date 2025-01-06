@@ -1,4 +1,4 @@
-package controllers;
+package com.openclassrooms.starterjwt.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
